@@ -49,14 +49,14 @@ public class InterestActivity extends AppCompatActivity {
         String topic = topicButtons.get(button);
         if (selectedTopics.contains(topic)) {
             selectedTopics.remove(topic);
-            button.setBackgroundColor(Color.parseColor("#E0E0E0")); // unselected color
+            button.setBackgroundColor(Color.parseColor("#E0E0E0"));
         } else {
             if (selectedTopics.size() >= MAX_SELECTION) {
                 Toast.makeText(this, "You can only select up to 10 topics", Toast.LENGTH_SHORT).show();
                 return;
             }
             selectedTopics.add(topic);
-            button.setBackgroundColor(Color.parseColor("#009688")); // selected color
+            button.setBackgroundColor(Color.parseColor("#009688"));
         }
     }
 
