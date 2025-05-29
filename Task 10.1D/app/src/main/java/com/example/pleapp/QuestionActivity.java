@@ -40,6 +40,7 @@ public class QuestionActivity extends AppCompatActivity {
     private ArrayList<String> questionList = new ArrayList<>();
     private ArrayList<ArrayList<String>> optionsList = new ArrayList<>();
     private ArrayList<String> correctAnswers = new ArrayList<>();
+    private final ArrayList<RadioGroup> radioGroups = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +70,31 @@ public class QuestionActivity extends AppCompatActivity {
                                     JSONObject questionObj = quizArray.getJSONObject(i);
                                     String question = questionObj.getString("question");
                                     JSONArray options = questionObj.getJSONArray("options");
-                                    String correctAnswer = questionObj.getString("correct_answer");
+                                    String correctAnswerLetter = questionObj.getString("correct_answer");
 
                                     questionList.add(question);
-                                    correctAnswers.add(correctAnswer);
 
                                     ArrayList<String> opts = new ArrayList<>();
                                     for (int j = 0; j < options.length(); j++) {
                                         opts.add(options.getString(j));
                                     }
                                     optionsList.add(opts);
+                                    String correctAnswerText = "";
+                                    switch (correctAnswerLetter.toUpperCase()) {
+                                        case "A":
+                                            correctAnswerText = opts.get(0);
+                                            break;
+                                        case "B":
+                                            correctAnswerText = opts.get(1);
+                                            break;
+                                        case "C":
+                                            correctAnswerText = opts.get(2);
+                                            break;
+                                        case "D":
+                                            correctAnswerText = opts.get(3);
+                                            break;
+                                    }
+                                    correctAnswers.add(correctAnswerText);
                                 }
 
                                 displayQuestions();
@@ -136,8 +152,7 @@ public class QuestionActivity extends AppCompatActivity {
             questionsContainer.addView(questionText);
 
             RadioGroup radioGroup = new RadioGroup(this);
-            radioGroup.setId(View.generateViewId());
-            radioGroup.setTag(i);
+            radioGroups.add(radioGroup);
 
             for (String option : options) {
                 RadioButton radioButton = new RadioButton(this);
@@ -156,7 +171,7 @@ public class QuestionActivity extends AppCompatActivity {
         int totalQuestions = questionList.size();
 
         for (int i = 0; i < totalQuestions; i++) {
-            RadioGroup radioGroup = (RadioGroup) questionsContainer.getChildAt(i * 2 + 1); // Because every question has TextView + RadioGroup
+            RadioGroup radioGroup = radioGroups.get(i);
 
             int selectedId = radioGroup.getCheckedRadioButtonId();
 
@@ -168,7 +183,9 @@ public class QuestionActivity extends AppCompatActivity {
                 }
             }
 
-            String feedback = userAnswer.equals(correctAnswers.get(i)) ? "Correct!" : "Incorrect! Correct answer: " + correctAnswers.get(i);
+            String feedback = userAnswer.trim().equalsIgnoreCase(correctAnswers.get(i).trim()) ?
+                    "Correct!" :
+                    "Incorrect! Correct answer: " + correctAnswers.get(i);
 
             intent.putExtra("q" + (i + 1) + "_answer", userAnswer);
             intent.putExtra("q" + (i + 1) + "_feedback", feedback);
@@ -200,7 +217,7 @@ public class QuestionActivity extends AppCompatActivity {
                 }
 
                 q.put("userAnswer", userAnswer);
-                q.put("isCorrect", userAnswer.equals(correctAnswers.get(i)));
+                q.put("isCorrect", userAnswer.trim().equalsIgnoreCase(correctAnswers.get(i).trim()));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
